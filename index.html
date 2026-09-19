@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>The Line of Remorse</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Twemoji Library for uniform cross-platform SVG emojis -->
+  <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@latest/dist/twemoji.min.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+            serif: ['Georgia', 'Cambria', 'serif']
+          },
+          colors: {
+            noir: {
+              950: '#090b10',
+              900: '#11141c',
+              850: '#171c26',
+              800: '#202634',
+              700: '#2e374a',
+              600: '#43506c',
+              400: '#94a3b8',
+              200: '#e2e8f0'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    /* mobile viewport and tap behavior fixes */
+    html, body {
+      min-height: 100dvh;
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior-y: none;
+    }
+
+    button {
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* twemoji universal standard styling */
+    img.emoji {
+      height: 1.15em;
+      width: 1.15em;
+      margin: 0 0.15em;
+      vertical-align: -0.15em;
+      display: inline-block;
+      pointer-events: none;
+    }
+
+    /* subject avatar large emoji box styling */
+    #subjectAvatar img.emoji {
+      width: 2.5rem;
+      height: 2.5rem;
+      margin: 0;
+      vertical-align: middle;
+    }
+
+    /* result icon badges */
+    #archetypeIcon img.emoji,
+    #lastSacrificedIcon img.emoji,
+    #firstSparedIcon img.emoji {
+      width: 1.75rem;
+      height: 1.75rem;
+      margin: 0;
+      vertical-align: middle;
+    }
+
+    /* momentum scrolling and scroll isolation */
+    #spectrumListContainer {
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+    }
+
+    /* scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090b10;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #202634;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #2e374a;
+    }
+
+    .remorse-card {
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+    }
+    .card-enter {
+      opacity: 0;
+      transform: translateY(10px) scale(0.99);
+    }
+    .card-active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  </style>
+</head>
+<body class="bg-noir-950 text-slate-200 min-h-[100dvh] flex flex-col font-sans selection:bg-indigo-900 selection:text-white antialiased overflow-x-hidden">
+
+  <!-- header -->
+  <header class="w-full border-b border-noir-800 bg-noir-950/90 backdrop-blur-md sticky top-0 z-50 pt-[env(safe-area-inset-top)]">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-2.5">
+        <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-[0_0_8px_#6366f1]"></span>
+        <div class="flex flex-col">
+          <span class="font-bold text-sm sm:text-base tracking-wide text-white leading-tight">The Line of Remorse</span>
+          <span class="text-[11px] text-noir-400">Where does your empathy start?</span>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-2.5">
+        <button id="resetHeaderBtn" class="hidden min-h-[40px] px-3.5 text-xs text-noir-400 hover:text-slate-200 active:text-slate-100 transition rounded-lg border border-noir-800 hover:bg-noir-850 active:bg-noir-800 flex items-center justify-center">
+          Start Over
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- main -->
+  <main class="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 w-full max-w-3xl mx-auto pb-[max(1rem,env(safe-area-inset-bottom))]">
+
+    <!-- intro -->
+    <section id="introView" class="w-full bg-noir-900 border border-noir-800 rounded-2xl p-5 sm:p-9 shadow-2xl relative text-left">
+      <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight mb-3">
+        Which lives would you feel bad taking?
+      </h1>
+      
+      <p class="text-noir-200 text-sm sm:text-base leading-relaxed mb-6 font-normal">
+        Most of us swat a mosqiuto without blinking, but wouldn’t hurt a dog or a child. Somewhere between a flea and a human being, we all draw an invisible line where genuine guilt kicks in.
+      </p>
+
+      <div class="p-4 rounded-xl bg-noir-850 border border-noir-700/60 mb-6 text-sm">
+        <div class="text-xs uppercase font-semibold tracking-wider text-indigo-400 mb-1">The Simple Question:</div>
+        <p class="text-slate-200 font-medium">
+          If you had to kill this creature, or accidentally killed it (like hitting it while driving or stepping on it), would you genuinely feel bad afterwards?
+        </p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-between pt-5 border-t border-noir-800 gap-4">
+        <span class="text-xs text-noir-400 order-2 sm:order-1">
+          No wrong answers
+        </span>
+        <button id="startExperimentBtn" class="w-full sm:w-auto min-h-[48px] px-7 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-semibold text-sm tracking-wide shadow-lg shadow-indigo-600/30 transition transform active:scale-98 flex items-center justify-center space-x-2 order-1 sm:order-2">
+          <span>Begin</span>
+          <span class="text-lg">→</span>
+        </button>
+      </div>
+    </section>
+
+    <section id="testView" class="hidden w-full max-w-xl flex-col items-center">
+      
+      <!-- progressbar -->
+      <div class="w-full mb-3 sm:mb-4 bg-noir-900 border border-noir-800 rounded-xl p-3.5 shadow-sm select-none">
+        <div class="flex items-center justify-between text-xs mb-2">
+          <span class="text-noir-400 flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+            <span>No Guilt</span>
+          </span>
+          <span class="text-slate-100 font-semibold tracking-wider text-[11px] font-mono">
+            QUESTION <span id="currentStep">1</span> OF ~8
+          </span>
+          <span class="text-noir-400 flex items-center gap-1.5">
+            <span>Heavy Guilt</span>
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          </span>
+        </div>
+
+        <!-- track -->
+        <div class="relative w-full h-2.5 bg-noir-850 rounded-full overflow-hidden border border-noir-800">
+          <div id="gaugeIntervalBar" class="absolute top-0 bottom-0 bg-indigo-500/30 border-x-2 border-indigo-400 transition-all duration-300" style="left: 0%; width: 100%;"></div>
+          <div id="gaugeCurrentPin" class="absolute top-0 bottom-0 w-1 bg-white shadow-[0_0_8px_#ffffff] transition-all duration-300" style="left: 50%;"></div>
+        </div>
+        <div class="flex justify-between items-center text-[10px] text-noir-400 mt-1.5 font-medium">
+          <span>Least protective</span>
+          <span id="uncertaintyWidth" class="text-indigo-300 font-mono">Zeroing in: 100% left</span>
+          <span>Most protective</span>
+        </div>
+      </div>
+
+      <!-- subj card -->
+      <div id="subjectCard" class="w-full bg-noir-900 border border-noir-800 rounded-2xl p-5 sm:p-7 shadow-xl remorse-card card-active relative">
+        
+        <div class="flex items-center justify-between mb-3.5 select-none">
+          <span id="subjectCategory" class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-noir-850 text-indigo-300 border border-noir-750">
+            Category
+          </span>
+          <span id="questionCountBadge" class="text-xs text-noir-400 font-mono">
+            Round #1
+          </span>
+        </div>
+
+        <!-- animal -->
+        <div class="flex items-center gap-3.5 sm:gap-4 mb-4">
+          <div id="subjectAvatar" class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-noir-850 border border-noir-700/80 shadow-inner select-none flex-shrink-0 flex items-center justify-center text-3xl">
+            🐜
+          </div>
+          <div>
+            <h2 id="subjectName" class="text-xl sm:text-2xl font-bold text-white tracking-tight">
+              Subject Name
+            </h2>
+            <p id="subjectScientific" class="text-xs text-noir-400 italic mt-0.5">
+              Simple scientific family
+            </p>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="p-3.5 rounded-xl bg-noir-850 border border-noir-800 text-sm text-noir-200 leading-relaxed mb-4">
+          <p id="subjectDescription" class="mb-1.5">
+            Brief summary of the animal.
+          </p>
+          <p id="subjectContextSnippet" class="text-xs text-noir-400 border-t border-noir-800/80 pt-1.5">
+            Facts about awareness, pain, or behavior.
+          </p>
+        </div>
+
+        <div class="text-center mb-4">
+          <p class="text-sm sm:text-base font-medium text-slate-100 leading-snug">
+            If you had to kill this creature, or accidentally killed it, would you feel bad?
+          </p>
+        </div>
+
+        <!-- main answer btns -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+          <button id="btnNoRemorse" class="group min-h-[64px] sm:min-h-[72px] p-3.5 sm:p-4 rounded-xl border border-rose-900/40 bg-rose-950/25 hover:bg-rose-900/40 active:bg-rose-900/60 text-rose-200 transition duration-150 flex flex-col items-center justify-center text-center shadow-md active:scale-[0.98]">
+            <span class="text-sm font-semibold flex items-center gap-1.5">
+              <span>✕</span> No, wouldn't feel bad
+            </span>
+            <span class="text-[11px] text-rose-300/70 mt-0.5">Wouldn't bother me, barely a second thought</span>
+          </button>
+
+          <button id="btnYesRemorse" class="group min-h-[64px] sm:min-h-[72px] p-3.5 sm:p-4 rounded-xl border border-emerald-900/40 bg-emerald-950/25 hover:bg-emerald-900/40 active:bg-emerald-900/60 text-emerald-200 transition duration-150 flex flex-col items-center justify-center text-center shadow-md active:scale-[0.98]">
+            <span class="text-sm font-semibold flex items-center gap-1.5">
+              <span>✓</span> Yes, I would feel bad
+            </span>
+            <span class="text-[11px] text-emerald-300/70 mt-0.5">I'd feel genuine guilt, regret, or sadness</span>
+          </button>
+        </div>
+
+        <!-- neutral buton -->
+        <div class="mt-3 flex justify-center">
+          <button id="btnTorn" class="min-h-[44px] w-full sm:w-auto px-4 py-2 text-xs text-slate-300 active:text-white transition rounded-xl border border-noir-800 flex items-center justify-center space-x-1.5 bg-noir-850/60 hover:bg-noir-800 active:bg-noir-750">
+            <span>⚖️</span>
+            <span>I'm on the fence about this one</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- history -->
+      <div id="decisionHistoryContainer" class="w-full mt-3 flex items-center justify-center flex-wrap gap-1.5 text-xs select-none">
+      </div>
+    </section>
+
+    <!-- results -->
+    <section id="resultsView" class="hidden w-full max-w-2xl flex-col items-center">
+      
+      <div class="w-full bg-noir-900 border border-noir-800 rounded-2xl p-5 sm:p-8 shadow-2xl relative">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-noir-800 gap-3">
+          <div>
+            <span class="text-xs font-semibold uppercase tracking-wider text-indigo-400">Your Experiment Results</span>
+            <h2 class="text-2xl sm:text-3xl font-bold text-white mt-0.5">Here is your Line of Remorse</h2>
+          </div>
+          <div class="px-3.5 py-1.5 rounded-xl bg-indigo-950/70 border border-indigo-500/30 text-left sm:text-right self-start sm:self-auto">
+            <div class="text-[10px] text-noir-400 uppercase tracking-wide">Boundary Rating</div>
+            <div id="finalScoreVal" class="text-xl font-bold text-indigo-300 font-mono">0.00</div>
+          </div>
+        </div>
+
+        <!-- archetype -->
+        <div class="my-4 sm:my-5 p-4 rounded-xl bg-noir-850 border border-noir-800">
+          <div class="flex items-center space-x-3 mb-1.5">
+            <span id="archetypeIcon" class="flex items-center justify-center flex-shrink-0 text-xl">🌿</span>
+            <div>
+              <h3 id="archetypeName" class="text-base sm:text-lg font-bold text-white">Ethical Profile</h3>
+              <span id="archetypeSub" class="text-xs text-indigo-400">What drives your decisions</span>
+            </div>
+          </div>
+          <p id="archetypeDescription" class="text-xs sm:text-sm text-noir-200 leading-relaxed mt-2">
+            Description of how you value different forms of life.
+          </p>
+        </div>
+
+        <!-- cutoff specimens -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-4 sm:my-5">
+          <div class="p-3.5 rounded-xl border border-rose-900/30 bg-rose-950/15">
+            <div class="text-xs font-medium text-rose-400">You'd Kill Without Feeling Bad:</div>
+            <div class="flex items-center gap-2.5 mt-2">
+              <span id="lastSacrificedIcon" class="flex items-center justify-center flex-shrink-0 text-xl">🪰</span>
+              <div>
+                <div id="lastSacrificedName" class="font-semibold text-slate-100 text-sm">—</div>
+                <div id="lastSacrificedDetail" class="text-[11px] text-noir-400">Score: 0.00</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl border border-emerald-900/30 bg-emerald-950/15">
+            <div class="text-xs font-medium text-emerald-400">Where Your Guilt Kicks In:</div>
+            <div class="flex items-center gap-2.5 mt-2">
+              <span id="firstSparedIcon" class="flex items-center justify-center flex-shrink-0 text-xl">🐸</span>
+              <div>
+                <div id="firstSparedName" class="font-semibold text-slate-100 text-sm">—</div>
+                <div id="firstSparedDetail" class="text-[11px] text-noir-400">Score: 0.00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- postreview list -->
+        <div class="mt-5">
+          <div class="flex items-center justify-between mb-2">
+            <h4 class="text-xs font-semibold text-slate-300 uppercase tracking-wide">All Creatures Checked Against Your Line</h4>
+            <span class="text-[11px] text-noir-400">Cutoff: <span id="userThresholdText" class="font-mono text-indigo-300 font-semibold">0.50</span></span>
+          </div>
+          
+          <div class="space-y-1.5 max-h-60 overflow-y-auto pr-1 border border-noir-800 rounded-xl p-2.5 bg-noir-950/60" id="spectrumListContainer">
+          </div>
+        </div>
+
+        <div id="dissonanceContainer" class="hidden mt-4 p-3.5 rounded-xl border border-amber-900/40 bg-amber-950/20 text-amber-200 text-xs">
+          <div class="font-bold flex items-center gap-1.5 mb-1 text-amber-300">
+            <span>💡</span>
+            <span>Interesting Inconsistency in Your Answers</span>
+          </div>
+          <p id="dissonanceText" class="text-amber-200/90 leading-relaxed">
+            Notes on surprising combinations.
+          </p>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-noir-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <button id="copyShareBtn" class="w-full sm:w-auto min-h-[44px] px-4 py-2 rounded-xl border border-noir-700 bg-noir-850 hover:bg-noir-800 active:bg-noir-750 text-xs text-slate-200 transition flex items-center justify-center space-x-2">
+            <span>📋</span>
+            <span id="copyShareText">Copy My Results</span>
+          </button>
+
+          <button id="restartBtn" class="w-full sm:w-auto min-h-[44px] px-6 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white text-xs font-semibold transition shadow-md flex items-center justify-center">
+            Take It Again
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <script>
+    function renderTwemoji(target = document.body) {
+      if (typeof twemoji !== 'undefined') {
+        twemoji.parse(target, {
+          folder: 'svg',
+          ext: '.svg',
+          base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/'
+        });
+      }
+    }
+  </script>
+
+  <!-- entitys database -->
+  <script>
+    const ENTITY_DATABASE = [
+      {
+        id: 'dust_mite',
+        name: 'Dust Mite',
+        scientific: 'Microscopic insect',
+        category: 'Microscopic',
+        weight: 0.02,
+        emoji: '🔬',
+        description: 'An invisible bug that lives harmlessly in pillows and rugs, eating shed skin flakes.',
+        contextSnippet: 'Has no brain, no eyes, and can’t feel pain or fear.'
+      },
+      {
+        id: 'tapeworm',
+        name: 'Tapeworm',
+        scientific: 'Internal parasite',
+        category: 'Parasite',
+        weight: 0.04,
+        emoji: '🪱',
+        description: 'A parasite that lives inside stomachs and intestines, causing sickness and malnutrition.',
+        contextSnippet: 'Can only survive by stealing nutrition directly from other animals.'
+      },
+      {
+        id: 'flea',
+        name: 'Flea',
+        scientific: 'Biting insect',
+        category: 'Pest',
+        weight: 0.06,
+        emoji: '🦟',
+        description: 'A jumping blood-sucker that infests dogs and cats and spreads disease.',
+        contextSnippet: 'Causes non-stop itching and skin infections on family pets.'
+      },
+      {
+        id: 'mosquito',
+        name: 'Mosquito',
+        scientific: 'Biting insect',
+        category: 'Pest',
+        weight: 0.08,
+        emoji: '🦟',
+        description: 'A blood-sucking insect responsible for spreading malaria and dengue to millions of people.',
+        contextSnippet: 'Driven strictly by automatic reflex; has no emotional feelings.'
+      },
+      {
+        id: 'bedbug',
+        name: 'Bedbug',
+        scientific: 'Biting insect',
+        category: 'Pest',
+        weight: 0.11,
+        emoji: '🪲',
+        description: 'A bug that hides inside mattresses and crawls out at night to drink human blood.',
+        contextSnippet: 'Causes severe stress, lost sleep, and painful itchy welts.'
+      },
+      {
+        id: 'cockroach',
+        name: 'Cockroach',
+        scientific: 'Common pest',
+        category: 'Pest',
+        weight: 0.14,
+        emoji: '🪳',
+        description: 'A hardy scavenger that runs around kitchens and spreads dirt, germs, and asthma triggers.',
+        contextSnippet: 'Can live for a week without a head, operating largely on nerve reflexes.'
+      },
+      {
+        id: 'jellyfish',
+        name: 'Moon Jellyfish',
+        scientific: 'Cnidarian',
+        category: 'Sea Animal',
+        weight: 0.16,
+        emoji: '🪼',
+        description: 'A translucent, drifting sea creature that floats along ocean currents.',
+        contextSnippet: 'Has no brain, heart, or blood, relying entirely on a simple nerve net.'
+        },
+      {
+        id: 'housefly',
+        name: 'Housefly',
+        scientific: 'Flying pest',
+        category: 'Pest',
+        weight: 0.18,
+        emoji: '🪰',
+        description: 'A common fly that lands on trash and rotting food, then lands on your meal.',
+        contextSnippet: 'Has fast 30-millisecond reflexes, but no complex brain thoughts.'
+      },
+      {
+        id: 'garden_ant',
+        name: 'Garden Ant',
+        scientific: 'Social insect',
+        category: 'Insect',
+        weight: 0.22,
+        emoji: '🐜',
+        description: 'A tiny worker that spends its life gathering food and digging underground tunnels for its queen.',
+        contextSnippet: 'Works selflessly for the colony with zero sense of individual self-preservation.'
+      },
+      {
+        id: 'earthworm',
+        name: 'Earthworm',
+        scientific: 'Soil creature',
+        category: 'Invertebrate',
+        weight: 0.26,
+        emoji: '🪱',
+        description: 'A harmless underground worm that eats dirt and naturally fertilizes garden soil.',
+        contextSnippet: 'Completely defenseless; has no teeth, stingers, or aggression.'
+      },
+      {
+        id: 'garden_snail',
+        name: 'Garden Snail',
+        scientific: 'Mollusk',
+        category: 'Invertebrate',
+        weight: 0.29,
+        emoji: '🐌',
+        description: 'A slow-moving creature with soft tentacles and a fragile shell it carries everywhere.',
+        contextSnippet: 'Its only defense when scared is to tuck into its shell and wait.'
+      },
+      {
+        id: 'jumping_spider',
+        name: 'Jumping Spider',
+        scientific: 'Harmless spider',
+        category: 'Arachnid',
+        weight: 0.33,
+        emoji: '🕷️',
+        description: 'A tiny, curious spider with eight big eyes that hunts pest bugs around windowsills.',
+        contextSnippet: 'Shows genuine curiosity, recognizes human movement, and does not bite people.'
+      },
+      {
+        id: 'honeybee',
+        name: 'Honeybee',
+        scientific: 'Pollinator',
+        category: 'Insect',
+        weight: 0.37,
+        emoji: '🐝',
+        description: 'A fuzzy flyer that pollinates flowers, vegetables, and fruit while making sweet honey.',
+        contextSnippet: 'Communicates using a dance and dies immediately if it ever has to sting.'
+      },
+      {
+        id: 'ladybug',
+        name: 'Ladybug',
+        scientific: 'Friendly beetle',
+        category: 'Insect',
+        weight: 0.40,
+        emoji: '🐞',
+        description: 'A red, dotted beetle loved by gardeners because it eats crop-destroying plant lice.',
+        contextSnippet: 'Harmless to humans and considered a symbol of good luck worldwide.'
+      },
+      {
+        id: 'common_carp',
+        name: 'Goldfish',
+        scientific: 'Freshwater fish',
+        category: 'Fish',
+        weight: 0.44,
+        emoji: '🐟',
+        description: 'A pet fish that can remember faces, learn feeding routines, and navigate little mazes.',
+        contextSnippet: 'Has a real backbone, spinal cord, and basic pain receptors.'
+      },
+      {
+        id: 'tree_frog',
+        name: 'Tree Frog',
+        scientific: 'Amphibian',
+        category: 'Amphibian',
+        weight: 0.48,
+        emoji: '🐸',
+        description: 'A green frog with sticky toe pads that sings at night and catches mosquitoes.',
+        contextSnippet: 'Has delicate, sensitive skin that absorbs water directly from the air.'
+      },
+      {
+        id: 'garter_snake',
+        name: 'Garter Snake',
+        scientific: 'Harmless reptile',
+        category: 'Reptile',
+        weight: 0.51,
+        emoji: '🐍',
+        description: 'A gentle, non-venomous garden snake that slithers away quietly when people approach.',
+        contextSnippet: 'Completely harmless to humans and helps keep mice away from gardens.'
+      },
+      {
+        id: 'house_mouse',
+        name: 'Field Mouse',
+        scientific: 'Small mammal',
+        category: 'Small Mammal',
+        weight: 0.54,
+        emoji: '🐁',
+        description: 'A tiny furry mammal that makes warm nests, cares for its pups, and trembles in fear.',
+        contextSnippet: 'Has a mammal heart and brain; scientists know it can feel distress and sadness.'
+      },
+      {
+        id: 'city_pigeon',
+        name: 'City Pigeon',
+        scientific: 'Urban bird',
+        category: 'Bird',
+        weight: 0.57,
+        emoji: '🐦',
+        description: 'A docile city bird that mates for life and shares baby-raising duties with its partner.',
+        contextSnippet: 'Can recognize human faces in a crowd and remembers who has been kind or mean.'
+      },
+      {
+        id: 'squirrel',
+        name: 'Gray Squirrel',
+        scientific: 'Tree rodent',
+        category: 'Small Mammal',
+        weight: 0.60,
+        emoji: '🐿️',
+        description: 'A playful backyard animal that remembers where it buried hundreds of acorns through winter.',
+        contextSnippet: 'Pretends to bury nuts in fake spots when it notices rivals watching it.'
+      },
+      {
+        id: 'mallard_duck',
+        name: 'Mallard Duck',
+        scientific: 'Waterfowl',
+        category: 'Bird',
+        weight: 0.62,
+        emoji: '🦆',
+        description: 'A social waterfowl that flies in formations, dabbling in ponds and caring for ducklings.',
+        contextSnippet: 'Forms strong pair bonds and displays complex vocal and visual communication.'
+        },
+      {
+        id: 'chicken',
+        name: 'Barnyard Chicken',
+        scientific: 'Farm bird',
+        category: 'Farm Animal',
+        weight: 0.63,
+        emoji: '🐔',
+        description: 'A curious bird that knows its flock mates, purrs when comfortable, and protects its chicks.',
+        contextSnippet: 'Shows maternal worry: a mother hen’s heart rate speeds up when her chick is cold.'
+      },
+      {
+        id: 'wild_salmon',
+        name: 'Wild Salmon',
+        scientific: 'Ocean & river fish',
+        category: 'Fish',
+        weight: 0.66,
+        emoji: '🐟',
+        description: 'A powerful fish that swims thousands of miles against river currents to lay eggs before dying.',
+        contextSnippet: 'Feeds entire river valleys, from wild bears and eagles down to moss and trees.'
+      },
+      {
+        id: 'raccoon',
+        name: 'Raccoon',
+        scientific: 'Masked mammal',
+        category: 'Wild Mammal',
+        weight: 0.69,
+        emoji: '🦝',
+        description: 'A clever night mammal with soft little hands that can open jars, latches, and doors.',
+        contextSnippet: 'Solves complex physical puzzles and remembers the solutions for years.'
+      },
+      {
+        id: 'domestic_pig',
+        name: 'Farm Pig',
+        scientific: 'Smart farm animal',
+        category: 'Farm Animal',
+        weight: 0.72,
+        emoji: '🐖',
+        description: 'A cheerful animal that is smarter than dogs and loves tummy rubs, toys, and mud baths.',
+        contextSnippet: 'Can play video games with a joystick and suffers deep sadness in cramped pens.'
+      },
+      {
+        id: 'white_tailed_deer',
+        name: 'White-Tailed Deer',
+        scientific: 'Herbivorous mammal',
+        category: 'Wild Mammal',
+        weight: 0.74,
+        emoji: '🦌',
+        description: 'A gentle forest herbivore known for its cautious nature, graceful leaps, and quiet herd bonds.',
+        contextSnippet: 'Has a complex emotional capacity, showing intense maternal devotion and acute stress responses.'
+        },
+      {
+        id: 'domestic_cow',
+        name: 'Pasture Cow',
+        scientific: 'Gentle herbivore',
+        category: 'Farm Animal',
+        weight: 0.75,
+        emoji: '🐄',
+        description: 'A big, gentle animal with best friends in the herd that gets stressed when separated from them.',
+        contextSnippet: 'Cries out and searches for days if its calf is taken away from it.'
+      },
+      {
+        id: 'octopus',
+        name: 'Octopus',
+        scientific: 'Intelligent sea creature',
+        category: 'Sea Animal',
+        weight: 0.77,
+        emoji: '🐙',
+        description: 'A playful creature with three hearts and blue blood that can change colors and open childproof bottles.',
+        contextSnippet: 'Has individual moods and personalities; plays with toys when bored.'
+      },
+      {
+        id: 'crow',
+        name: 'Crow',
+        scientific: 'Clever bird',
+        category: 'Bird',
+        weight: 0.79,
+        emoji: '🦅',
+        description: 'One of the smartest birds on Earth; makes its own tools and holds funerals when a companion dies.',
+        contextSnippet: 'Can remember a human face for ten years and warns its children about bad people.'
+      },
+      {
+        id: 'feral_cat',
+        name: 'Stray Cat',
+        scientific: 'Independent feline',
+        category: 'Companion',
+        weight: 0.81,
+        emoji: '🐈',
+        description: 'A homeless neighborhood cat looking for food and warmth under parked cars.',
+        contextSnippet: 'Capable of affection and trust, even after living through cold winters outside.'
+      },
+      {
+        id: 'stray_dog',
+        name: 'Homeless Stray Dog',
+        scientific: 'Street dog',
+        category: 'Companion',
+        weight: 0.84,
+        emoji: '🐕',
+        description: 'A lost street dog that wags its tail hopefully when an everyday person walks by.',
+        contextSnippet: 'Evolved for thousands of years specifically to understand human smiles and hand signals.'
+      },
+      {
+        id: 'riding_horse',
+        name: 'Riding Horse',
+        scientific: 'Domestic horse',
+        category: 'Large Domestic',
+        weight: 0.86,
+        emoji: '🐎',
+        description: 'A strong, graceful animal that forms close emotional partnerships with its human riders.',
+        contextSnippet: 'Can sense a rider’s fear or happiness simply by muscle tension and voice tones.'
+      },
+      {
+        id: 'sea_turtle',
+        name: 'Sea Turtle',
+        scientific: 'Endangered turtle',
+        category: 'Wild Animal',
+        weight: 0.88,
+        emoji: '🐢',
+        description: 'An ancient marine reptile that lives up to 100 years and swims across oceans back to where it hatched.',
+        contextSnippet: 'Has survived since the dinosaur age, but is now endangered by human trash.'
+      },
+      {
+        id: 'wild_elephant',
+        name: 'Wild Elephant',
+        scientific: 'Gentle giant',
+        category: 'Wild Animal',
+        weight: 0.90,
+        emoji: '🐘',
+        description: 'A matriarchal giant that mourns dead herd members and consoles crying babies with its trunk.',
+        contextSnippet: 'Recognizes itself in a mirror and sheds real tears during moments of grief.'
+      },
+      {
+        id: 'chimpanzee',
+        name: 'Chimpanzee',
+        scientific: 'Great ape',
+        category: 'Ape',
+        weight: 0.92,
+        emoji: '🦧',
+        description: 'Our closest wild relative; laughs when tickled, hugs when making up, and makes walking sticks.',
+        contextSnippet: 'Shares nearly 99% of our DNA and exhibits empathy when others are hurt.'
+      },
+      {
+        id: 'childhood_pet',
+        name: 'Your Family Pet Dog or Cat',
+        scientific: 'Beloved pet',
+        category: 'Family Pet',
+        weight: 0.94,
+        emoji: '🐕‍🦺',
+        description: 'A loyal pet that has slept at the foot of your bed and loved you unconditionally for years.',
+        contextSnippet: 'A trusted family member whose death causes deep, long-lasting grief.'
+      },
+      {
+        id: 'human_violent_felon',
+        name: 'A Remorseless Violent Criminal',
+        scientific: 'Human',
+        category: 'Human',
+        weight: 0.95,
+        emoji: '👤',
+        description: 'A human being convicted of repeated cruelty against innocent people, who feels zero regret.',
+        contextSnippet: 'Has a human mind and feelings, but has deliberately caused horrible suffering.'
+      },
+      {
+        id: 'human_stranger',
+        name: 'An Everyday Stranger',
+        scientific: 'Human',
+        category: 'Human',
+        weight: 0.97,
+        emoji: '🚶',
+        description: 'An average person walking past you on the sidewalk with their own family, dreams, and worries.',
+        contextSnippet: 'Someone you don’t know personally, but who has people that care about them.'
+      },
+      {
+        id: 'human_close_friend',
+        name: 'A Close Best Friend',
+        scientific: 'Human',
+        category: 'Human (Friend)',
+        weight: 0.985,
+        emoji: '🤝',
+        description: 'A reliable friend who listens to your secrets, shares your laughs, and has your back.',
+        contextSnippet: 'A deeply personal part of your daily happiness and social life.'
+      },
+      {
+        id: 'human_family',
+        name: 'Your Immediate Family Member',
+        scientific: 'Human',
+        category: 'Human (Family)',
+        weight: 0.995,
+        emoji: '👨‍👩‍👧',
+        description: 'Your parent, sibling, or partner with whom you share home, history, and deep love.',
+        contextSnippet: 'The core circle of people you instinctively protect with your life.'
+      },
+      {
+        id: 'human_child',
+        name: 'An Innocent Baby or Little Child',
+        scientific: 'Human child',
+        category: 'Human (Child)',
+        weight: 1.00,
+        emoji: '👶',
+        description: 'A helpless little child who has done nothing wrong in this world and has an entire future ahead.',
+        contextSnippet: 'Universally seen as the purest, most precious life to protect.'
+      }
+    ];
+
+    ENTITY_DATABASE.sort((a, b) => a.weight - b.weight);
+  </script>
+
+  <script>
+    class MoralExperiment {
+      constructor() {
+        this.database = [...ENTITY_DATABASE];
+        this.step = 0;
+        this.maxSteps = 8;
+        
+        this.lowIndex = 0;
+        this.highIndex = this.database.length - 1;
+        this.currentIndex = -1;
+        this.history = [];
+        this.testedIndices = new Set();
+
+        this.archetypes = [
+            {
+                min: 0.0,
+                max: 0.15,
+                name: "Total Life Protector",
+                sub: "You hate harming anything living",
+                icon: "🌱",
+                desc: "You have an exceptionally tender boundary. You feel guilty squishing even microscopic parasites, bedbugs, or fleas, and would rather relocate pests outside than take their lives."
+            },
+            {
+                min: 0.15,
+                max: 0.38,
+                name: "Gentle Observer",
+                sub: "Parasites don't bother you, but harmless creatures do",
+                icon: "🐝",
+                desc: "You have no trouble swatting biting pests, but you draw the line at brainless drifters like jellyfish or harmless insects like honeybees, snails, and spiders that do no injury."
+            },
+            {
+                min: 0.38,
+                max: 0.58,
+                name: "Backbone Defender",
+                sub: "Anything with real pain and feelings counts",
+                icon: "🐸",
+                desc: "Your cutoff aligns closely with central nervous systems and vertebrates (goldfish, tree frogs, field mice). Invertebrates don't trigger guilt, but causing physical pain to a creature with a spine feels wrong."
+            },
+            {
+                min: 0.58,
+                max: 0.76,
+                name: "Warm-Hearted Sentientist",
+                sub: "Social, emotional animals matter deeply to you",
+                icon: "🦌",
+                desc: "You care profoundly about creatures with social bonds, maternal instincts, and emotional fear—like mated ducks, forest deer, pigs, and pasture cows. Harming sentient animals weighs heavily on you."
+            },
+            {
+                min: 0.76,
+                max: 0.91,
+                name: "Close Companion Friend",
+                sub: "Pets and super-intelligent animals",
+                icon: "🐕",
+                desc: "Your empathy concentrates around loyal companions (dogs, cats, horses) and remarkably intelligent wildlife like octopuses and elephants. Common livestock and game don't pull on your heartstrings the same way."
+            },
+            {
+                min: 0.91,
+                max: 0.97,
+                name: "Human-First Believer",
+                sub: "Human life stands in a league of its own",
+                icon: "🏛️",
+                desc: "You hold a baseline respect for animals, but genuine moral remorse is reserved strictly for human beings. For you, any human life exists on a fundamentally different ethical plane."
+            },
+            {
+                min: 0.97,
+                max: 1.01,
+                name: "Inner-Circle Protector",
+                sub: "Loved ones and innocents come first",
+                icon: "🛡️",
+                desc: "Your protective instincts belong foremost to the people you love and the vulnerable. An everyday stranger or violent offender registers very differently than your close circle, family, or an innocent child."
+            }
+        ];
+
+        this.initDOMElements();
+        this.bindEvents();
+      }
+
+      initDOMElements() {
+        this.introView = document.getElementById('introView');
+        this.testView = document.getElementById('testView');
+        this.resultsView = document.getElementById('resultsView');
+
+        this.resetHeaderBtn = document.getElementById('resetHeaderBtn');
+
+        this.subjectCard = document.getElementById('subjectCard');
+        this.subjectAvatar = document.getElementById('subjectAvatar');
+        this.subjectName = document.getElementById('subjectName');
+        this.subjectScientific = document.getElementById('subjectScientific');
+        this.subjectCategory = document.getElementById('subjectCategory');
+        this.subjectDescription = document.getElementById('subjectDescription');
+        this.subjectContextSnippet = document.getElementById('subjectContextSnippet');
+        this.currentStepSpan = document.getElementById('currentStep');
+        this.questionCountBadge = document.getElementById('questionCountBadge');
+
+        this.gaugeIntervalBar = document.getElementById('gaugeIntervalBar');
+        this.gaugeCurrentPin = document.getElementById('gaugeCurrentPin');
+        this.uncertaintyWidth = document.getElementById('uncertaintyWidth');
+        this.historyContainer = document.getElementById('decisionHistoryContainer');
+
+        this.startBtn = document.getElementById('startExperimentBtn');
+        this.btnNoRemorse = document.getElementById('btnNoRemorse');
+        this.btnYesRemorse = document.getElementById('btnYesRemorse');
+        this.btnTorn = document.getElementById('btnTorn');
+        this.restartBtn = document.getElementById('restartBtn');
+        this.copyShareBtn = document.getElementById('copyShareBtn');
+        this.copyShareText = document.getElementById('copyShareText');
+      }
+
+      bindEvents() {
+        this.startBtn.addEventListener('click', () => this.start());
+        this.resetHeaderBtn.addEventListener('click', () => this.reset());
+        this.restartBtn.addEventListener('click', () => this.reset());
+
+        this.btnNoRemorse.addEventListener('click', () => this.handleAnswer('no_remorse'));
+        this.btnYesRemorse.addEventListener('click', () => this.handleAnswer('remorse'));
+        this.btnTorn.addEventListener('click', () => this.handleAnswer('torn'));
+
+        this.copyShareBtn.addEventListener('click', () => this.copySummary());
+      }
+
+      start() {
+        this.step = 0;
+        this.history = [];
+        this.testedIndices.clear();
+        this.lowIndex = 0;
+        this.highIndex = this.database.length - 1;
+
+        const midCandidates = [];
+        for (let i = 0; i < this.database.length; i++) {
+          if (this.database[i].weight >= 0.44 && this.database[i].weight <= 0.56) {
+            midCandidates.push(i);
+          }
+        }
+        this.currentIndex = midCandidates[Math.floor(Math.random() * midCandidates.length)] || Math.floor(this.database.length / 2);
+
+        this.introView.classList.add('hidden');
+        this.resultsView.classList.add('hidden');
+        this.testView.classList.remove('hidden');
+        this.testView.classList.add('flex');
+        this.resetHeaderBtn.classList.remove('hidden');
+
+        this.renderCurrentQuestion();
+        this.updateGauge();
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }
+
+      reset() {
+        this.introView.classList.remove('hidden');
+        this.testView.classList.add('hidden');
+        this.testView.classList.remove('flex');
+        this.resultsView.classList.add('hidden');
+        this.resultsView.classList.remove('flex');
+        this.resetHeaderBtn.classList.add('hidden');
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }
+
+      renderCurrentQuestion() {
+        const entity = this.database[this.currentIndex];
+        this.step++;
+        this.testedIndices.add(this.currentIndex);
+
+        this.subjectCard.classList.remove('card-active');
+        this.subjectCard.classList.add('card-enter');
+
+        setTimeout(() => {
+          this.subjectAvatar.textContent = entity.emoji;
+          this.subjectName.textContent = entity.name;
+          this.subjectScientific.textContent = entity.scientific;
+          this.subjectCategory.textContent = entity.category;
+          this.subjectDescription.textContent = entity.description;
+          this.subjectContextSnippet.textContent = `Quick context: ${entity.contextSnippet}`;
+
+          this.currentStepSpan.textContent = this.step;
+          this.questionCountBadge.textContent = `Round #${this.step}`;
+
+          this.subjectCard.classList.remove('card-enter');
+          this.subjectCard.classList.add('card-active');
+
+          renderTwemoji(this.subjectAvatar);
+          this.updateGauge();
+          this.renderHistoryTokens();
+        }, 100);
+      }
+
+      updateGauge() {
+        const entity = this.database[this.currentIndex];
+
+        const leftPct = (this.database[this.lowIndex].weight * 100).toFixed(1);
+        const rightPct = (this.database[this.highIndex].weight * 100).toFixed(1);
+        const widthPct = Math.max(3, rightPct - leftPct);
+
+        this.gaugeIntervalBar.style.left = `${leftPct}%`;
+        this.gaugeIntervalBar.style.width = `${widthPct}%`;
+
+        const curPct = (entity.weight * 100).toFixed(1);
+        this.gaugeCurrentPin.style.left = `${curPct}%`;
+
+        const remainingSpan = Math.round((this.database[this.highIndex].weight - this.database[this.lowIndex].weight) * 100);
+        this.uncertaintyWidth.textContent = `Zeroing in: ~${remainingSpan}% gap left`;
+      }
+
+      renderHistoryTokens() {
+        this.historyContainer.innerHTML = '';
+        this.history.forEach((item) => {
+          const pill = document.createElement('div');
+          pill.className = `px-2 py-0.5 rounded-md flex items-center gap-1 border ${
+            item.response === 'remorse' 
+              ? 'border-emerald-700/50 bg-emerald-950/40 text-emerald-300' 
+              : item.response === 'no_remorse' 
+              ? 'border-rose-700/50 bg-rose-950/40 text-rose-300' 
+              : 'border-amber-700/50 bg-amber-950/40 text-amber-300'
+          }`;
+          const symbol = item.response === 'remorse' ? '✓ Felt bad' : item.response === 'no_remorse' ? '✕ No guilt' : '⚖ Unsure';
+          pill.innerHTML = `<span>${item.entity.emoji}</span> <span>${item.entity.name.split(' ')[0]}</span> <span class="font-bold">(${symbol})</span>`;
+          this.historyContainer.appendChild(pill);
+        });
+        renderTwemoji(this.historyContainer);
+      }
+
+      handleAnswer(responseType) {
+        const currentEntity = this.database[this.currentIndex];
+
+        this.history.push({
+          entity: currentEntity,
+          response: responseType,
+          index: this.currentIndex
+        });
+
+        if (responseType === 'no_remorse') {
+          this.lowIndex = Math.max(this.lowIndex, this.currentIndex);
+        } else if (responseType === 'remorse') {
+          this.highIndex = Math.min(this.highIndex, this.currentIndex);
+        } else if (responseType === 'torn') {
+          this.lowIndex = Math.max(0, Math.min(this.lowIndex, this.currentIndex - 1));
+          this.highIndex = Math.min(this.database.length - 1, Math.max(this.highIndex, this.currentIndex + 1));
+        }
+
+        const remainingDistance = this.highIndex - this.lowIndex;
+        if (remainingDistance <= 1 || this.step >= this.maxSteps) {
+          this.completeExperiment();
+          return;
+        }
+
+        let candidateIndex = Math.round((this.lowIndex + this.highIndex) / 2);
+
+        if (this.testedIndices.has(candidateIndex)) {
+          let found = false;
+          for (let offset = 1; offset <= remainingDistance; offset++) {
+            if (candidateIndex + offset <= this.highIndex && !this.testedIndices.has(candidateIndex + offset)) {
+              candidateIndex += offset;
+              found = true;
+              break;
+            }
+            if (candidateIndex - offset >= this.lowIndex && !this.testedIndices.has(candidateIndex - offset)) {
+              candidateIndex -= offset;
+              found = true;
+              break;
+            }
+          }
+          if (!found) {
+            this.completeExperiment();
+            return;
+          }
+        }
+
+        this.currentIndex = candidateIndex;
+        this.renderCurrentQuestion();
+      }
+
+      completeExperiment() {
+        this.testView.classList.add('hidden');
+        this.testView.classList.remove('flex');
+        this.resultsView.classList.remove('hidden');
+        this.resultsView.classList.add('flex');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        const remorseEntries = this.history.filter(h => h.response === 'remorse');
+        const noRemorseEntries = this.history.filter(h => h.response === 'no_remorse');
+
+        let lastSacrificed = noRemorseEntries.length > 0
+          ? noRemorseEntries.reduce((prev, curr) => (curr.entity.weight > prev.entity.weight ? curr : prev)).entity
+          : null;
+
+        let firstSpared = remorseEntries.length > 0
+          ? remorseEntries.reduce((prev, curr) => (curr.entity.weight < prev.entity.weight ? curr : prev)).entity
+          : null;
+
+        let thresholdWeight = 0.50;
+        if (lastSacrificed && firstSpared) {
+          thresholdWeight = (lastSacrificed.weight + firstSpared.weight) / 2;
+        } else if (firstSpared && !lastSacrificed) {
+          thresholdWeight = Math.max(0.02, firstSpared.weight - 0.05);
+        } else if (lastSacrificed && !firstSpared) {
+          thresholdWeight = Math.min(1.00, lastSacrificed.weight + 0.05);
+        } else {
+          thresholdWeight = this.database[this.currentIndex].weight;
+        }
+
+        document.getElementById('finalScoreVal').textContent = thresholdWeight.toFixed(2);
+        document.getElementById('userThresholdText').textContent = thresholdWeight.toFixed(2);
+
+        if (lastSacrificed) {
+          document.getElementById('lastSacrificedIcon').textContent = lastSacrificed.emoji;
+          document.getElementById('lastSacrificedName').textContent = lastSacrificed.name;
+          document.getElementById('lastSacrificedDetail').textContent = `Weight: ${lastSacrificed.weight.toFixed(2)} • ${lastSacrificed.category}`;
+        } else {
+          document.getElementById('lastSacrificedIcon').textContent = '🕊️';
+          document.getElementById('lastSacrificedName').textContent = 'None';
+          document.getElementById('lastSacrificedDetail').textContent = 'You felt bad for every single creature shown.';
+        }
+
+        if (firstSpared) {
+          document.getElementById('firstSparedIcon').textContent = firstSpared.emoji;
+          document.getElementById('firstSparedName').textContent = firstSpared.name;
+          document.getElementById('firstSparedDetail').textContent = `Weight: ${firstSpared.weight.toFixed(2)} • ${firstSpared.category}`;
+        } else {
+          document.getElementById('firstSparedIcon').textContent = '⚔️';
+          document.getElementById('firstSparedName').textContent = 'None';
+          document.getElementById('firstSparedDetail').textContent = 'You did not feel guilt for any creature tested.';
+        }
+
+        const archetype = this.archetypes.find(a => thresholdWeight >= a.min && thresholdWeight <= a.max) || this.archetypes[3];
+        document.getElementById('archetypeIcon').textContent = archetype.icon;
+        document.getElementById('archetypeName').textContent = archetype.name;
+        document.getElementById('archetypeSub').textContent = archetype.sub;
+        document.getElementById('archetypeDescription').textContent = archetype.desc;
+
+        renderTwemoji(this.resultsView);
+
+        this.renderSpectrum(thresholdWeight);
+        this.detectDissonance();
+      }
+
+      renderSpectrum(threshold) {
+        const container = document.getElementById('spectrumListContainer');
+        
+        const fragment = document.createDocumentFragment();
+
+        this.database.forEach(entity => {
+          const isAbove = entity.weight >= threshold;
+          const tested = this.history.find(h => h.entity.id === entity.id);
+
+          const row = document.createElement('div');
+          row.className = `flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-mono transition ${
+            isAbove 
+              ? 'bg-emerald-950/25 border border-emerald-800/30 text-emerald-200' 
+              : 'bg-rose-950/20 border border-rose-800/25 text-rose-200/80'
+          }`;
+
+          let tag = '';
+          if (tested) {
+            if (tested.response === 'remorse') tag = '<span class="px-1.5 py-0.5 rounded bg-emerald-900/60 text-[10px] text-emerald-300 ml-1.5">YOU SAID GUILT</span>';
+            else if (tested.response === 'no_remorse') tag = '<span class="px-1.5 py-0.5 rounded bg-rose-900/60 text-[10px] text-rose-300 ml-1.5">YOU SAID NO GUILT</span>';
+            else tag = '<span class="px-1.5 py-0.5 rounded bg-amber-900/60 text-[10px] text-amber-300 ml-1.5">ON FENCE</span>';
+          }
+
+          row.innerHTML = `
+            <div class="flex items-center space-x-2">
+              <span class="text-base">${entity.emoji}</span>
+              <span class="font-medium text-slate-100">${entity.name}</span>
+              <span class="text-[10px] text-noir-400 hidden sm:inline">(${entity.category})</span>
+              ${tag}
+            </div>
+            <div class="flex items-center space-x-2">
+              <span class="text-[11px] font-bold ${isAbove ? 'text-emerald-400' : 'text-rose-400'}">
+                ${isAbove ? 'FEEL BAD' : 'NO GUILT'}
+              </span>
+              <span class="text-[10px] text-noir-400 opacity-70 w-8 text-right">${entity.weight.toFixed(2)}</span>
+            </div>
+          `;
+          fragment.appendChild(row);
+        });
+
+        container.innerHTML = '';
+        container.appendChild(fragment);
+        renderTwemoji(container);
+      }
+
+      detectDissonance() {
+        const dissonanceBox = document.getElementById('dissonanceContainer');
+        const dissonanceText = document.getElementById('dissonanceText');
+
+        let anomalies = [];
+        for (let i = 0; i < this.history.length; i++) {
+          for (let j = 0; j < this.history.length; j++) {
+            const hA = this.history[i];
+            const hB = this.history[j];
+            if (hA.entity.weight < hB.entity.weight && hA.response === 'remorse' && hB.response === 'no_remorse') {
+              anomalies.push({ lower: hA.entity, higher: hB.entity });
+            }
+          }
+        }
+
+        if (anomalies.length > 0) {
+          dissonanceBox.classList.remove('hidden');
+          const pair = anomalies[0];
+          dissonanceText.textContent = `You felt bad about harming a ${pair.lower.name}, but didn't feel bad about harming a ${pair.higher.name}. That's very common! Human empathy often depends on things like cuteness, phobias, or how useful an animal is, rather than strict biology.`;
+        } else {
+          dissonanceBox.classList.add('hidden');
+        }
+      }
+
+      async copySummary() {
+        const score = document.getElementById('finalScoreVal').textContent;
+        const archetype = document.getElementById('archetypeName').textContent;
+        const text = `The Line of Remorse — My Cutoff Score:\nMy empathy line came in at: ${score} / 1.00\nProfile: ${archetype}\nWhere is your line between creatures you'd kill and those you'd feel bad about?`;
+
+        try {
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+          } else {
+            const tempInput = document.createElement('textarea');
+            tempInput.value = text;
+            tempInput.style.position = 'fixed';
+            tempInput.style.left = '-9999px';
+            tempInput.style.top = '0';
+            tempInput.setAttribute('readonly', '');
+            document.body.appendChild(tempInput);
+            tempInput.focus();
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+          }
+          this.copyShareText.textContent = 'Copied to Clipboard!';
+          setTimeout(() => {
+            this.copyShareText.textContent = 'Copy My Results';
+          }, 2000);
+        } catch (e) {
+          console.error('Clipboard copy failed', e);
+        }
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      window.moralApp = new MoralExperiment();
+      renderTwemoji(document.body);
+    });
+  </script>
+</body>
+</html>
